@@ -1,13 +1,7 @@
 package com.edeqa.testforapplicationplugin2;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
-
-import com.edeqa.waytous.WaytousPlugin;
-
-import java.util.List;
+import android.util.Log;
 
 /**
  * Created 8/16/2017.
@@ -16,62 +10,36 @@ import java.util.List;
 public class PluginService extends com.edeqa.waytous.PluginService {
     static final String LOG_TAG = "ResPluginService2";
 
-    public void onStart(Intent intent, int startId) {
-        super.onStart( intent, startId );
+    @Override
+    public void setContext(Object o) {
+
     }
 
-    public void onDestroy() {
-        super.onDestroy();
+    @Override
+    public boolean onEvent(String s, Object o) {
+        switch(s) {
+            default:
+                Log.w(LOG_TAG, s + ":" + o);
+                break;
+        }
+        return true;
     }
 
-    public IBinder onBind(Intent intent) {
-        return binder;
+    @Override
+    public int getViewResId() {
+        return R.layout.activity_main;
     }
 
-    private final WaytousPlugin.Stub binder =
-            new WaytousPlugin.Stub() {
+    @Override
+    public void viewClicked(int resId) {
+        System.out.println("PLUGIN1:"+resId);
 
-                @Override
-                public String getType() throws RemoteException {
-                    System.out.println(LOG_TAG + ":getType");
-                    return LOG_TAG;
-                }
+        Intent intent = new Intent(com.edeqa.waytous.PluginService.ACTION_POST_EVENT);
+        intent.putExtra(ACTION_POST_EVENT_NAME, "event_name_from_plugin_two");
+        intent.putExtra(ACTION_POST_EVENT_OBJECT, "event_object_from_plugin_two");
+        getApplicationContext().sendBroadcast(intent);
 
-                @Override
-                public void start() throws RemoteException {
-                    System.out.println(LOG_TAG + ":start");
-                }
+    }
 
-                @Override
-                public void finish() throws RemoteException {
-                    System.out.println(LOG_TAG + ":finish");
-
-                }
-
-                @Override
-                public List<String> events() throws RemoteException {
-                    System.out.println(LOG_TAG + ":events");
-
-                    return null;
-                }
-
-                @Override
-                public void setContext(Bundle var1) throws RemoteException {
-                    System.out.println(LOG_TAG + ":setcontext:"+var1);
-
-                }
-
-                @Override
-                public boolean onEvent(String var1, Bundle var2) throws RemoteException {
-                    System.out.println(LOG_TAG + ":onevent:"+var1+":"+var2.getSerializable("object"));
-                    return true;
-                }
-
-                @Override
-                public void setLoggingLevel(Bundle var1) throws RemoteException {
-                    System.out.println(LOG_TAG + ":setlogginglevel:"+var1);
-
-                }
-            };
 }
 
